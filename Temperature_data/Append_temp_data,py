@@ -34,7 +34,7 @@ def send_temperature_data_hourly():
     station_list = cursor.fetchall()
     for i in range(len(hour_data_json["station"])):
         if hour_data_json["station"][i]["value"] is not None:
-            station_id = hour_data_json["station"][i]["key"]
+            station_id = int(hour_data_json["station"][i]["key"])
             station_name = hour_data_json["station"][i]["name"]
             station_owner = hour_data_json["station"][i]["owner"]
             station_longitude = hour_data_json["station"][i]["longitude"]
@@ -49,21 +49,26 @@ def send_temperature_data_hourly():
             # station_from = hour_data_json["station"][i]["from"]
             # measuring_Stations = hour_data_json["station"][i]["measuringStations"]
             # station_owner_category = hour_data_json["station"][i]["ownerCategory"]
-            
+            cursor.execute("""SELECT station_id from station;""")
+            idlist = list()
+            for tupel in cursor.fetchall():
+                tupel = tupel[0]
+                idlist.append(tupel)
 
-        if station_id not in station_list:
-            cursor.execute(f"""
-            INSERT INTO station (station_id, name, owner, lon, lat, height ) VALUES
-            ({station_id}, $${station_name}$$, $${station_owner}$$, {station_longitude}, {station_latitude}, {station_height});
-        """)
-            connection.commit()
-
-        if hour_data_json["station"][i]["value"] is not None:
-            cursor.execute(f"""
-            INSERT INTO temperature (station_id, value, timestamp, quality) VALUES
-            ({station_id}, {station_temperature}, {station_value_date}, '{station_value_quality}');
+            if station_id not in idlist:
+                cursor.execute(f"""
+                INSERT INTO station (station_id, station_name, station_owner, longitude, latitude, height ) VALUES
+                ({station_id}, $${station_name}$$, $${station_owner}$$, {station_longitude}, {station_latitude}, {station_height});
             """)
-            connection.commit()
+                connection.commit()
+
+            if hour_data_json["station"][i]["value"] is not None:
+                cursor.execute(f"""
+                INSERT INTO temperature (station_id, value, timestamp, quality) VALUES
+                ({station_id}, {station_temperature}, {station_value_date}, '{station_value_quality}');
+                """)
+                connection.commit()
+
     cursor.close()
     connection.close()
     return None
