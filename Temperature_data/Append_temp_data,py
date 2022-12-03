@@ -6,7 +6,7 @@ def send_temperature_data_hourly():
     params = {
     'dbname': 'smhi_data',
     'user': 'postgres',
-    'password': 'Magnus725!',
+    'password': '',
     'port': 5432
     }
     connection = psycopg2.connect(**params)
