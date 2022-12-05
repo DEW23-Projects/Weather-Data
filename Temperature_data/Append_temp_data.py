@@ -7,10 +7,16 @@ def send_temperature_data_hourly():
     password = file.read().strip()
     file.close()
     params = {
+<<<<<<< HEAD
     'dbname': 'website_database',
     'user': 'aendraes',
     'password': f'{password}',
     'host': '90.231.140.42',
+=======
+    'dbname': 'smhi_data',
+    'user': 'postgres',
+    'password': f'{password}',
+>>>>>>> 9e90c8b2d97c8b067113e525a9b4feaa766cb06f
     'port': 5432
     }
     connection = psycopg2.connect(**params)
