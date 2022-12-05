@@ -1,7 +1,0 @@
-{
-    'dbname': 'website_database',
-    'user': 'postgres',
-    'password': 'password',
-    'host': '90.231.140.42',
-    'port': 5432
-    }
