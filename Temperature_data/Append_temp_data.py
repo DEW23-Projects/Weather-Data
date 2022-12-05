@@ -2,23 +2,11 @@ import psycopg2
 import json
 import requests
 
-def send_temperature_data_hourly():
-    file = open('password.txt', 'r')
-    password = file.read().strip()
+def send_temperature_data():
+    file = open('login.txt', 'r')
+    params = eval(file.read().strip())
     file.close()
-    params = {
-<<<<<<< HEAD
-    'dbname': 'website_database',
-    'user': 'aendraes',
-    'password': f'{password}',
-    'host': '90.231.140.42',
-=======
-    'dbname': 'smhi_data',
-    'user': 'postgres',
-    'password': f'{password}',
->>>>>>> 9e90c8b2d97c8b067113e525a9b4feaa766cb06f
-    'port': 5432
-    }
+    
     connection = psycopg2.connect(**params)
     cursor = connection.cursor()
 
@@ -32,16 +20,16 @@ def send_temperature_data_hourly():
     cursor.execute("""
         select max(timestamp) from temperature;
         """)
-    # Check if there's a new timestamp in the first entry., if there's no new timestamp we assume there's no new data.
-    latest_timestamp = int(cursor.fetchone()[0])
-    print(type(latest_timestamp),latest_timestamp)
-    print(type(latest_timestamp),type(hour_data_json["station"][0]["value"][0]["date"]))
-    if latest_timestamp == hour_data_json["station"][0]["value"][0]["date"]:
-        print("Timestamp not new, quitting program")
-        cursor.close()
-        connection.close()
-        return None
-    
+    # Check if there's a new timestamp in the first entry., imf there's no new timestamp we assume there's no new data.
+    times = latest_timestamp = int(cursor.fetchone()[0])
+    if times is not None:
+        latest_timestamp = int(times)
+        if latest_timestamp == hour_data_json["station"][0]["value"][0]["date"]:
+            print("Timestamp not new, quitting program")
+            cursor.close()
+            connection.close()
+            return None
+       
     for i in range(len(hour_data_json["station"])):
         if hour_data_json["station"][i]["value"] is not None:
             station_id = int(hour_data_json["station"][i]["key"])
@@ -93,4 +81,4 @@ def send_temperature_data_hourly():
 
             
 if __name__ == '__main__':
-    send_temperature_data_hourly()
+    send_temperature_data()
